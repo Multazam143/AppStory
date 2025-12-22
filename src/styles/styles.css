@@ -1,0 +1,417 @@
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0056b3;
+  --text-color: #333;
+  --text-light: #555;
+  --border-color: #dee2e6;
+  --background-color: #f8f9fa;
+  --white: #ffffff;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* --- Header & Navigasi --- */
+header {
+  background-color: var(--white);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.main-header {
+  min-height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.brand-name {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.drawer-button {
+  color: var(--primary-color);
+  background-color: transparent;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.nav-list li a {
+  color: var(--text-light);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s, font-weight 0.2s;
+  font-weight: 500;
+  display: block;
+}
+
+.nav-list li a:hover:not([aria-current="page"]),
+.nav-list li a:focus-visible:not([aria-current="page"]) {
+  color: var(--primary-color);
+  background-color: var(--background-color);
+  text-decoration: none;
+  outline: none;
+}
+
+.nav-list li a[aria-current="page"] {
+  color: var(--primary-color);
+  font-weight: 700; 
+}
+
+.nav-list li a[aria-current="page"]:hover,
+.nav-list li a[aria-current="page"]:focus-visible {
+  color: var(--primary-hover);
+  background-color: var(--background-color);
+  outline: none;
+}
+
+/* Style untuk Tombol Logout*/
+.nav-list li button {
+  color: var(--text-light);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+  font-weight: 500;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-list li button:hover,
+.nav-list li button:focus-visible {
+  color: var(--primary-color);
+  background-color: var(--background-color);
+  outline: none;
+}
+
+.navigation-drawer {
+  background-color: var(--white);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-height: 100vh;
+  width: 200px;
+  padding: 20px 10px;
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  transform: translateX(-100%);
+  transition: transform 350ms ease-out;
+  z-index: 9999;
+}
+
+.navigation-drawer.open {
+  transform: translateX(0);
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* --- Konten Utama --- */
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 32px;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+  font-weight: 600;
+}
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.25rem;
+}
+
+.story-list-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+#map-container,
+#location-map {
+  height: 500px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.story-item {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out,
+    border-color 0.2s;
+  will-change: transform;
+}
+
+.story-item:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.story-item:focus-visible {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.story-item.active-story {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 0 0 3px var(--primary-color), var(--shadow-md);
+  border-color: var(--primary-color);
+}
+
+.story-item img {
+  width: 100%;
+  max-height: 250px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.story-item h3,
+.story-item p {
+  padding-inline: 1.25rem;
+}
+.story-item h3 {
+  margin-top: 1rem;
+  font-size: 1.25rem;
+  color: var(--primary-color);
+}
+.story-item p {
+  padding-bottom: 1.25rem;
+  color: var(--text-light);
+}
+
+/* --- Halaman Form (Login, Register, Add Story) --- */
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label,
+.form-group-inline label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* Style dasar untuk semua input di form */
+.form-group textarea,
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="file"],
+input[readonly] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: var(--white);
+}
+
+.form-group textarea:focus-visible,
+.form-group input[type="text"]:focus-visible,
+.form-group input[type="email"]:focus-visible,
+.form-group input[type="password"]:focus-visible,
+.form-group input[type="file"]:focus-visible {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+input[readonly] {
+  background-color: var(--background-color);
+  cursor: not-allowed;
+}
+
+.form-group-inline {
+  display: flex;
+  flex-direction: column; 
+  gap: 20px;
+}
+.form-group-inline .form-group {
+  flex: 1;
+}
+
+button[type="submit"] {
+  background-color: var(--primary-color);
+  color: var(--white);
+  font-weight: 600;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 100%; 
+  transition: background-color 0.2s, transform 0.1s ease-in-out;
+}
+
+button[type="submit"]:hover {
+  background-color: var(--primary-hover);
+}
+
+button[type="submit"]:active {
+  transform: scale(0.98);
+  background-color: var(--primary-hover);
+}
+
+button[type="submit"]:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* --- Pesan Error/Sukses --- */
+#message-container {
+  margin-bottom: 20px;
+  display: none;
+}
+.message {
+  padding: 15px;
+  border-radius: 5px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+.message.info {
+  background-color: #e6f7ff;
+  border-color: #91d5ff;
+  color: #0056b3;
+}
+.message.success {
+  background-color: #f6ffed;
+  border-color: #b7eb8f;
+  color: #389e0d;
+}
+.message.error {
+  background-color: #fff1f0;
+  border-color: #ffa39e;
+  color: #cf1322;
+}
+
+/* --- Aksesibilitas --- */
+.skip-to-content {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background-color: var(--primary-color);
+  color: var(--white);
+  padding: 10px 15px;
+  z-index: 10001;
+  text-decoration: none;
+  font-weight: bold;
+  transition: top 0.3s;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* === Media Queries untuk Responsif === */
+
+/* Tablet */
+@media screen and (width > 768px) {
+  .story-list-container {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .form-group-inline {
+    flex-direction: row;
+  }
+
+  button[type="submit"] {
+    width: auto;
+  }
+}
+
+/* Desktop Besar */
+@media screen and (width > 1000px) {
+  .main-header {
+    padding: 0;
+  }
+
+  .navigation-drawer {
+    min-height: auto;
+    width: auto;
+    padding: 0;
+    background-color: transparent;
+    flex-direction: row;
+    justify-content: space-between;
+    position: static;
+    box-shadow: none;
+    transform: translateX(0);
+  }
+
+  .nav-list {
+    flex-direction: row;
+    gap: 0 10px;
+  }
+
+  .nav-list li a,
+  .nav-list li button {
+    display: inline-block;
+    width: auto;
+  }
+
+  .drawer-button {
+    display: none;
+  }
+}
