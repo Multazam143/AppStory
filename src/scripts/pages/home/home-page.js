@@ -1,6 +1,7 @@
 import L from 'leaflet';
 import StoryApi from '../../data/story-api';
 import { showFormattedDate } from '../../utils';
+import StoryDB from '../../utils/indexeddb';
 import NotificationHelper from '../../utils/notification-helper';
 
 const HomePage = {
@@ -66,25 +67,32 @@ const HomePage = {
     this._initMap(stories);
   },
 
-  _renderStoryList(stories, container) {
-    container.innerHTML = '';
-    stories.forEach((story) => {
-      const storyItem = document.createElement('article');
-      storyItem.classList.add('story-item');
-      storyItem.setAttribute('data-id', story.id);
-      storyItem.setAttribute('tabindex', '0');
-      storyItem.setAttribute('role', 'button');
-      storyItem.setAttribute('aria-label', `Lihat detail untuk ${story.name}`);
+_renderStoryList(stories, container) {
+  container.innerHTML = '';
 
-      storyItem.innerHTML = `
+  stories.forEach((story) => {
+    const storyItem = document.createElement('article');
+    storyItem.classList.add('story-item');
+    storyItem.setAttribute('data-id', story.id);
+    storyItem.setAttribute('tabindex', '0');
+    storyItem.setAttribute('role', 'button');
+    storyItem.setAttribute('aria-label', `Lihat detail untuk ${story.name}`);
+
+    storyItem.innerHTML = `
+      <a href="#/story/${story.id}" class="story-link">
         <img src="${story.photoUrl}" alt="Foto ${story.name}">
         <h3>${story.name}</h3>
-        <p><strong>Dibuat:</strong> ${showFormattedDate(story.createdAt)}</p>
-        <p>${story.description.substring(0, 100)}...</p>
-      `;
-      container.appendChild(storyItem);
-    });
-  },
+      </a>
+
+      <p><strong>Dibuat:</strong> ${showFormattedDate(story.createdAt)}</p>
+      <p>${story.description.substring(0, 100)}...</p>
+    `;
+
+    container.appendChild(storyItem);
+  });
+},
+
+
 
   _initMap(stories) {
     const mapContainer = document.getElementById('map-container');

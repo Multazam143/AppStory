@@ -82,6 +82,7 @@ class App {
         <li><a href="#/" ${url === '/' ? 'aria-current="page"' : ''}>Beranda</a></li>
         <li><a href="#/add" ${url === '/add' ? 'aria-current="page"' : ''}>Tambah Story</a></li>
         <li><a href="#/about" ${url === '/about' ? 'aria-current="page"' : ''}>About</a></li>
+        <li><a href="#/offline">Offline Story</a></li>
         <li><button id="logout-button" type="button">Logout</button></li> 
       `;
     } else {

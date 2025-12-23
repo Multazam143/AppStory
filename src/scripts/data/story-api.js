@@ -117,6 +117,22 @@ class StoryApi {
       return { error: true, message: error.message };
     }
   }
+
+    static async getStoryDetail(id) {
+    try {
+      const response = await fetch(`${ENDPOINTS.STORIES}/${id}`, {
+        headers: {
+          'Authorization': this._getAuthHeader(),
+        },
+      });
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching story detail:', error);
+      return { error: true, message: error.message };
+    }
+  }
+
 }
 
 export default StoryApi;
