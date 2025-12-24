@@ -3,6 +3,7 @@ import StoryApi from '../../data/story-api';
 import { showFormattedDate } from '../../utils';
 import StoryDB from '../../utils/indexeddb';
 import NotificationHelper from '../../utils/notification-helper';
+import TokenManager from '../../utils/token-manager';
 
 const HomePage = {
   _map: null,
@@ -14,12 +15,20 @@ const HomePage = {
         <h1>Daftar Cerita dan Peta Lokasi</h1>
         
         <div class="notification-container" style="margin: 1rem 0;">
-            <button id="subscribePush" class="btn" style="display: none; background-color: #007bff; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">
-                🔔 Aktifkan Notifikasi
-            </button>
-            <button id="unsubscribePush" class="btn" style="display: none; background-color: #dc3545; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">
-                🔕 Matikan Notifikasi
-            </button>
+          <button
+            id="subscribePush"
+            class="btn"
+            style="display: none; background-color: #007bff; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;"
+          >
+            🔔 Aktifkan Notifikasi
+          </button>
+          <button
+            id="unsubscribePush"
+            class="btn"
+            style="display: none; background-color: #dc3545; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;"
+          >
+            🔕 Matikan Notifikasi
+          </button>
         </div>
 
         <div class="story-list-container">
@@ -30,7 +39,11 @@ const HomePage = {
 
           <section id="map-area" aria-labelledby="map-heading">
             <h2 id="map-heading">Peta Lokasi Cerita</h2>
-            <div id="map-container" role="region" aria-label="Peta lokasi cerita"></div>
+            <div
+              id="map-container"
+              role="region"
+              aria-label="Peta lokasi cerita"
+            ></div>
           </section>
         </div>
       </main>
@@ -38,17 +51,29 @@ const HomePage = {
   },
 
   async afterRender() {
-    await NotificationHelper.init({
-      subscribeButton: document.getElementById('subscribePush'),
-      unsubscribeButton: document.getElementById('unsubscribePush'),
-    });
+    /* ✅ INIT PUSH NOTIFICATION (AMAN) */
+    const subscribeButton = document.getElementById('subscribePush');
+    const unsubscribeButton = document.getElementById('unsubscribePush');
+
+    if (subscribeButton && unsubscribeButton) {
+      await NotificationHelper.init({
+        subscribeButton,
+        unsubscribeButton,
+      });
+    }
 
     const storyListContainer = document.getElementById('story-list');
     const response = await StoryApi.getStories();
 
     if (response.error) {
-      storyListContainer.innerHTML = `<p class="message error">Error: ${response.message}</p>`;
-      if (response.message.includes('Token') || response.message.includes('authentication')) {
+      storyListContainer.innerHTML = `
+        <p class="message error">Error: ${response.message}</p>
+      `;
+
+      if (
+        response.message.includes('Token') ||
+        response.message.includes('authentication')
+      ) {
         TokenManager.clearToken();
         window.location.hash = '#/login';
       }
@@ -58,7 +83,8 @@ const HomePage = {
     const stories = response.listStory;
 
     if (!stories || stories.length === 0) {
-      storyListContainer.innerHTML = '<p>Belum ada cerita untuk ditampilkan.</p>';
+      storyListContainer.innerHTML =
+        '<p>Belum ada cerita untuk ditampilkan.</p>';
       this._initMap([]);
       return;
     }
@@ -67,32 +93,34 @@ const HomePage = {
     this._initMap(stories);
   },
 
-_renderStoryList(stories, container) {
-  container.innerHTML = '';
+  _renderStoryList(stories, container) {
+    container.innerHTML = '';
 
-  stories.forEach((story) => {
-    const storyItem = document.createElement('article');
-    storyItem.classList.add('story-item');
-    storyItem.setAttribute('data-id', story.id);
-    storyItem.setAttribute('tabindex', '0');
-    storyItem.setAttribute('role', 'button');
-    storyItem.setAttribute('aria-label', `Lihat detail untuk ${story.name}`);
+    stories.forEach((story) => {
+      const storyItem = document.createElement('article');
+      storyItem.classList.add('story-item');
+      storyItem.setAttribute('data-id', story.id);
+      storyItem.setAttribute('tabindex', '0');
+      storyItem.setAttribute('role', 'button');
+      storyItem.setAttribute(
+        'aria-label',
+        `Lihat detail untuk ${story.name}`
+      );
 
-    storyItem.innerHTML = `
-      <a href="#/story/${story.id}" class="story-link">
-        <img src="${story.photoUrl}" alt="Foto ${story.name}">
-        <h3>${story.name}</h3>
-      </a>
+      storyItem.innerHTML = `
+        <a href="#/story/${story.id}" class="story-link">
+          <img src="${story.photoUrl}" alt="Foto ${story.name}">
+          <h3>${story.name}</h3>
+        </a>
+        <p><strong>Dibuat:</strong> ${showFormattedDate(
+          story.createdAt
+        )}</p>
+        <p>${story.description.substring(0, 100)}...</p>
+      `;
 
-      <p><strong>Dibuat:</strong> ${showFormattedDate(story.createdAt)}</p>
-      <p>${story.description.substring(0, 100)}...</p>
-    `;
-
-    container.appendChild(storyItem);
-  });
-},
-
-
+      container.appendChild(storyItem);
+    });
+  },
 
   _initMap(stories) {
     const mapContainer = document.getElementById('map-container');
@@ -107,19 +135,27 @@ _renderStoryList(stories, container) {
       zoom: 5,
     });
 
-    const osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    });
+    const osmLayer = L.tileLayer(
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }
+    );
 
-    const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    });
+    const topoLayer = L.tileLayer(
+      'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+      {
+        maxZoom: 17,
+        attribution:
+          'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }
+    );
 
     const baseLayers = {
-      'OpenStreetMap': osmLayer,
-      'OpenTopoMap': topoLayer,
+      OpenStreetMap: osmLayer,
+      OpenTopoMap: topoLayer,
     };
 
     osmLayer.addTo(this._map);
@@ -131,14 +167,17 @@ _renderStoryList(stories, container) {
     stories.forEach((story) => {
       if (story.lat && story.lon) {
         const marker = L.marker([story.lat, story.lon]).bindPopup(
-          `<strong>${story.name}</strong><p>${story.description.substring(0, 50)}...</p>`
+          `<strong>${story.name}</strong>
+           <p>${story.description.substring(0, 50)}...</p>`
         );
+
         this._markers.push({ id: story.id, marker });
         markerGroup.addLayer(marker);
       }
     });
 
     markerGroup.addTo(this._map);
+
     if (markerGroup.getLayers().length > 0) {
       this._map.fitBounds(markerGroup.getBounds());
     }
@@ -150,18 +189,27 @@ _renderStoryList(stories, container) {
     const storyItems = document.querySelectorAll('.story-item');
 
     const handleInteraction = (storyId, item) => {
-      const activeMarker = this._markers.find((m) => m.id === storyId)?.marker;
+      const activeMarker = this._markers.find(
+        (m) => m.id === storyId
+      )?.marker;
+
       if (activeMarker) {
         activeMarker.openPopup();
         this._map.setView(activeMarker.getLatLng(), 10);
-        storyItems.forEach((i) => i.classList.remove('active-story'));
+        storyItems.forEach((i) =>
+          i.classList.remove('active-story')
+        );
         item.classList.add('active-story');
       }
     };
 
     storyItems.forEach((item) => {
       const storyId = item.getAttribute('data-id');
-      item.addEventListener('click', () => handleInteraction(storyId, item));
+
+      item.addEventListener('click', () =>
+        handleInteraction(storyId, item)
+      );
+
       item.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
@@ -172,7 +220,9 @@ _renderStoryList(stories, container) {
 
     if (this._map) {
       this._map.on('popupclose', () => {
-        storyItems.forEach((i) => i.classList.remove('active-story'));
+        storyItems.forEach((i) =>
+          i.classList.remove('active-story')
+        );
       });
     }
   },
