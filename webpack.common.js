@@ -13,9 +13,6 @@ module.exports = {
   },
   module: {
     rules: [
-      // ⚠️ KITA MENGHAPUS BAGIAN CSS DISINI UNTUK MENCEGAH KONFLIK ⚠️
-      // Biarkan webpack.dev.js yang mengurus CSS.
-      
       {
         test: /\.(png|jpe?g|gif)$/i,
         type: 'asset/resource',
@@ -34,7 +31,7 @@ module.exports = {
           to: path.resolve(__dirname, 'dist/'),
         },
         {
-          // Pastikan file sw.js benar-benar ada di root folder project
+
           from: path.resolve(__dirname, 'sw.js'),
           to: path.resolve(__dirname, 'dist/sw.js'),
         },
